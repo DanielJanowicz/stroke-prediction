@@ -27,16 +27,7 @@ s
 ## Conclusive Thoughts: 
 s
 
-## 
 
 
 
 
-
-mport data and data preprocessing (Load data, data cleaning, data transformation, feature engineering, missing data imputation)
-
-Build prediction models including logistic regression, support vector machine, decision trees, random forest, and XGBoost
-
-Evaluate and select prediction models based on evaluation metrics, including accuracy, sensitivity, recall, F-score, and AUC
-
-Deploy the best prediction model using R
