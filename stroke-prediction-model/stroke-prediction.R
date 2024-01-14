@@ -1,6 +1,8 @@
 # Loading data & dependencies
 library(tidyverse)
 library(reshape2)
+library(ggplot2)
+library(GGally)
 df <- read.csv("healthcare-dataset-stroke-data.csv")
 
 # Dataset review
@@ -64,7 +66,7 @@ cor_matrix <- cor(numeric_df, use = "complete.obs")
 melted_cor_matrix <- melt(cor_matrix)
 
 # Correlation plot
-ggplot(melted_cor_matrix, aes(Var1, Var2, fill = value)) +
+cor_plot <- ggplot(melted_cor_matrix, aes(Var1, Var2, fill = value)) +
   geom_tile() +
   scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
                        midpoint = 0, limit = c(-1,1), space = "Lab", 
@@ -74,4 +76,89 @@ ggplot(melted_cor_matrix, aes(Var1, Var2, fill = value)) +
         axis.text.y = element_text(size = 12)) +
   coord_fixed()
 
+# Save the plot as an image file
+ggsave("correlation_matrix_plot.png", plot = cor_plot, width = 10, height = 8)
+
+
+# Work type & age correlation
+plot1 <- ggplot(df, aes(x = as.factor(work_type), y = age)) +
+  geom_boxplot() +
+  labs(x = "Work Type", y = "Age") +
+  theme_minimal()
+ggsave("work_type_age_plot.png", plot = plot1, width = 8, height = 6)
+
+# Work type & marital status correlation
+plot2 <- ggplot(df, aes(x = as.factor(work_type), fill = as.factor(ever_married))) +
+  geom_bar(position = "dodge") +
+  labs(x = "Work Type", fill = "Ever Married") +
+  theme_minimal()
+ggsave("work_type_marital_status_plot.png", plot = plot2, width = 8, height = 6)
+
+# Average glucose level & age
+plot3 <- ggplot(df, aes(x = age, y = avg_glucose_level)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Age", y = "Average Glucose Level") +
+  theme_minimal()
+ggsave("glucose_level_age_plot.png", plot = plot3, width = 8, height = 6)
+
+# Stroke & age
+plot4 <- ggplot(df, aes(x = as.factor(stroke), y = age)) +
+  geom_boxplot() +
+  labs(x = "Stroke (0 = No, 1 = Yes)", y = "Age") +
+  theme_minimal()
+ggsave("stroke_age_plot.png", plot = plot4, width = 8, height = 6)
+
+# Heart disease & age
+plot5 <- ggplot(df, aes(x = as.factor(heart_disease), y = age)) +
+  geom_boxplot() +
+  labs(x = "Heart Disease (0 = No, 1 = Yes)", y = "Age") +
+  theme_minimal()
+ggsave("heart_disease_age_plot.png", plot = plot5, width = 8, height = 6)
+
+# Hypertension & age
+plot6 <- ggplot(df, aes(x = as.factor(hypertension), y = age)) +
+  geom_boxplot() +
+  labs(x = "Hypertension (0 = No, 1 = Yes)", y = "Age") +
+  theme_minimal()
+ggsave("hypertension_age_plot.png", plot = plot6, width = 8, height = 6)
+
+
+# Selecting relevant columns for the pairwise plot
+selected_columns <- c("age", "ever_married", "work_type", "avg_glucose_level", 
+                      "stroke", "heart_disease", "hypertension")
+
+# Creating the pairwise scatter plot
+pairwise_plot <- ggpairs(df[, selected_columns], 
+                         title = "Pairwise Scatter Plot with Age")
+
+# Save the plot as an image file
+ggsave("pairwise_scatter_plot_with_age.png", plot = pairwise_plot, width = 12, height = 10)
+
+
+
+
+
+# T-test for comparing age between two groups (e.g., hypertension)
+t.test(df$age ~ df$hypertension)
+
+# ANOVA for comparing age across multiple groups (e.g., work_type)
+anova(lm(age ~ as.factor(work_type), data = df))
+
+# Chi-squared test for association between stroke and ever_married
+chisq.test(table(df$stroke, df$ever_married))
+
+# Chi-squared test for association between stroke and work_type
+chisq.test(table(df$stroke, df$work_type))
+
+# Pearson correlation test for age and avg_glucose_level
+cor.test(df$age, df$avg_glucose_level, method = "pearson")
+
+# Spearman correlation test if data is not normally distributed
+cor.test(df$age, df$avg_glucose_level, method = "spearman")
+
+# Linear regression for age and avg_glucose_level
+summary(lm(avg_glucose_level ~ age, data = df))
+
+# Logistic regression for predicting stroke (binary outcome) based on age
+summary(glm(stroke ~ age, data = df, family = "binomial"))
 
