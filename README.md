@@ -13,13 +13,22 @@ The prediction model is developed in R, specifically in RStudio.
 
 - [R 3.3.0+](https://cran.rstudio.com/)
 - [RStudio](https://posit.co/download/rstudio-desktop/)
+- [Stroke Dataset](https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset/code?resource=download)
 - [Tidyverse Data Science Package](https://www.tidyverse.org/)
+
+RStudio packages:
+```
+library(tidyverse)
+library(reshape2)
+library(ggplot2)
+library(GGally)
+library(dplyr)
+```
 
 In the RStudio Console:
 ```
-install.packages("tidyverse")
+install.packages("packagename")
 ```
-- [Stroke Dataset](https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset/code?resource=download)
 
 ## Results:
 s
