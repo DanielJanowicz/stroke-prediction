@@ -3,6 +3,7 @@ library(tidyverse)
 library(reshape2)
 library(ggplot2)
 library(GGally)
+library(dplyr)
 df <- read.csv("healthcare-dataset-stroke-data.csv")
 
 # Dataset review
@@ -162,3 +163,25 @@ summary(lm(avg_glucose_level ~ age, data = df))
 # Logistic regression for predicting stroke (binary outcome) based on age
 summary(glm(stroke ~ age, data = df, family = "binomial"))
 
+
+## Feature Engineering
+# Imputing missing BMI values with the median
+df <- df %>%
+  mutate(bmi = ifelse(is.na(bmi), median(bmi, na.rm = TRUE), bmi))
+
+# Age groups
+df <- df %>%
+  mutate(age_group = cut(age, breaks = c(-Inf, 18, 30, 45, 60, Inf),
+                         labels = c("child", "young_adult", "adult", "middle_aged", "senior")))
+
+# BMI categories based on standard definitions
+df <- df %>%
+  mutate(bmi_category = case_when(
+    bmi < 18.5 ~ "underweight",
+    bmi >= 18.5 & bmi < 25 ~ "normal",
+    bmi >= 25 & bmi < 30 ~ "overweight",
+    TRUE ~ "obese"
+  ))
+
+head(df)
+write.csv(df, file = "enhanced_cleaned_stroke_data.csv", row.names = FALSE)
